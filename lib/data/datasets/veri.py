@@ -20,7 +20,7 @@ class VeRi(BaseImageDataset):
        # cameras: 20
        """
 
-    dataset_dir = 'VeRi'
+    dataset_dir = 'VeRi-776'
 
     def __init__(self, root='../', verbose=True, **kwargs):
         super(VeRi, self).__init__()

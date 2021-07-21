@@ -204,10 +204,17 @@ class ResNet_IBN(nn.Module):
 
     def load_param(self, model_path):
         param_dict = torch.load(model_path)
-        for i in param_dict['state_dict']:
-            if 'fc' in i[7:]:
+        if 'state_dict' in param_dict.keys():
+            pretrained_dict = param_dict['state_dict']
+        else:
+            pretrained_dict = param_dict
+        for i in pretrained_dict:
+            if 'fc' in i:
                 continue
-            self.state_dict()[i[7:]].copy_(param_dict['state_dict'][i])
+            self.state_dict()[i].copy_(pretrained_dict[i])
+            # if 'fc' in i[7:]:
+            #     continue
+            # self.state_dict()[i[7:]].copy_(pretrained_dict[i])
 
 
 def resnet50_ibn_a(last_stride, pretrained=False, **kwargs):

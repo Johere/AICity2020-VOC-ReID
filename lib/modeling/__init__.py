@@ -7,7 +7,6 @@
 from .baseline import Baseline_reduce, Baseline
 
 
-
 def build_model(cfg, num_classes):
     if cfg.MODEL.MODEL_TYPE == 'baseline_reduce':
         print("using global feature baseline reduce")
@@ -22,5 +21,4 @@ def build_model(cfg, num_classes):
     else:
         print("unsupport model type")
         model = None
-
     return model

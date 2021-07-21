@@ -35,6 +35,7 @@ _C.MODEL.NECK = 'bnneck'
 # The loss type of metric loss
 # options:['triplet'](without center loss) or ['center','triplet_center'](with center loss)
 _C.MODEL.METRIC_LOSS_TYPE = 'triplet'
+_C.MODEL.USE_MALW_LOSS = False
 # For example, if loss type is cross entropy loss + triplet loss + center loss
 # the setting should be: _C.MODEL.METRIC_LOSS_TYPE = 'triplet_center' and _C.MODEL.IF_WITH_CENTER = 'yes'
 
@@ -50,7 +51,8 @@ _C.MODEL.FROZEN_FEATURE_EPOCH = 0
 
 _C.MODEL.FC_WEIGHT_NORM = False
 
-_C.MODEL.POOLING_METHOD = '' # POOLING METHOD, default is avg pooling
+_C.MODEL.POOLING_METHOD = ''  # POOLING METHOD, default is avg pooling
+_C.MODEL.MULTI_HEADS = False  # whether to use MULTI_HEADS
 _C.MODEL.ID_LOSS_TYPE = 'softmax'
 _C.MODEL.DROPOUT_PROB = 0.0
 

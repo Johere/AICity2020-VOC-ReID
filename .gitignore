@@ -1,4 +1,6 @@
 .idea
 .pyc
+*.pth
 output
 log
+pretrained_ckpt

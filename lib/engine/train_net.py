@@ -10,6 +10,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from lib.utils.reid_eval import evaluator
+from lib.utils.mem_helper import CPUMemory
 
 global ITER
 ITER = 0
@@ -47,6 +48,7 @@ def do_train(
             model, optimizer = amp.initialize(model, optimizer, opt_level='O1')
 
     logger = logging.getLogger("reid_baseline.train")
+    logger.info(model)
     logger.info("Start training")
 
     best_mAP = 0
@@ -92,7 +94,9 @@ def train(model, dataset, train_loader, optimizer, loss_fn, epoch, cfg, logger):
     ITER = 0
     log_period = cfg.SOLVER.LOG_PERIOD
     data_start = time.time()
+    cpu_memory = CPUMemory(unit='G')
     for batch in train_loader:
+        cpu_memory.flush()
         data_time.update(time.time() - data_start)
         input, target, _, _ = batch
         input = input.cuda()
@@ -116,9 +120,11 @@ def train(model, dataset, train_loader, optimizer, loss_fn, epoch, cfg, logger):
         losses.update(to_python_float(loss.data), input.size(0))
 
         if ITER % log_period == 0:
-            logger.info("Epoch[{}] Iteration[{}/{}] Loss: {:.3f}, data time: {:.3f}s, model time: {:.3f}s"
+            logger.info("Epoch[{}] Iteration[{}/{}] Loss: {:.3f}, data time: {:.3f}s, model time: {:.3f}s "
+                        "CPU used: {used_mem:.3f}G, free:{free_mem:.3f}G\t"
                         .format(epoch, ITER, len(train_loader),
-                                losses.val, data_time.val, model_time.val))
+                                losses.val, data_time.val, model_time.val,
+                                used_mem=cpu_memory.used_mem, free_mem=cpu_memory.free_mem))
         data_start = time.time()
     end = time.time()
     logger.info("epoch takes {:.3f}s".format((end - start)))

@@ -12,6 +12,8 @@ from torch import nn
 from .backbones import build_backbone
 from lib.layers.pooling import GeM
 from lib.layers.metric_learning import Arcface, Cosface, AMSoftmax, CircleLoss
+from lib.modeling.multi_head import MultiHeads
+
 
 def weights_init_kaiming(m):
     classname = m.__class__.__name__
@@ -61,8 +63,6 @@ def build_embedding_head(option, input_dim, output_dim, dropout_prob):
     else:
         print('unsupported embedding head options {}'.format(option))
     return reduce
-
-
 
 
 class Baseline_reduce(nn.Module):
@@ -176,6 +176,12 @@ class Baseline(nn.Module):
         self.neck_feat = neck_feat
         self.ID_LOSS_TYPE = cfg.MODEL.ID_LOSS_TYPE
 
+        if cfg.MODEL.MULTI_HEADS:
+            self.MultiHeads = MultiHeads(feature_dim=self.in_planes, groups=32, mode='S',
+                                         backbone_fc_dim=self.in_planes)
+        else:
+            self.MultiHeads = None
+
         self.bottleneck = nn.BatchNorm1d(self.in_planes)
         self.bottleneck.bias.requires_grad_(False)  # no shift
         #self.bottleneck = IBN(self.in_planes)
@@ -213,6 +219,10 @@ class Baseline(nn.Module):
         global_feat = self.gap(featmap)
         #global_feat = global_feat.view(global_feat.shape[0], -1)  # flatten to (bs, 2048)
         global_feat = global_feat.flatten(1)
+
+        # MultiHeads
+        if self.MultiHeads is not None:
+            _, global_feat, _, _ = self.MultiHeads(global_feat)
 
         feat = self.bottleneck(global_feat)  # normalize for angular softmax
         if self.training:

@@ -38,8 +38,7 @@ def main():
     cfg.freeze()
 
     output_dir = cfg.OUTPUT_DIR
-    if output_dir and not os.path.exists(output_dir):
-        mkdir(output_dir)
+    os.makedirs(output_dir, exist_ok=True)
 
     logger = setup_logger("reid_baseline", output_dir, 0)
     logger.info("Using {} GPUS".format(num_gpus))
@@ -58,6 +57,8 @@ def main():
 
     train_loader, val_loader, num_query, num_classes, dataset = make_data_loader(cfg)
     model = build_model(cfg, num_classes)
+    logger.info(model)
+    logger.info('loading param from:{}'.format(cfg.TEST.WEIGHT))
     model.load_param(cfg.TEST.WEIGHT)
 
     inference(cfg, model, val_loader, num_query, dataset)

@@ -122,13 +122,14 @@ class evaluator(object):
             gf = track_aug(gf, self.dataset.test_tracks, self.img_paths[self.num_query:])
 
         #qf, gf = pca_whiten(qf, gf)
+        cam_dist = None
+        ori_dist = None
         if self.cfg.TEST.USE_VOC:
             print('using VOC-ReID')
-            cam_dist = np.load(self.cfg.TEST.CAM_DIST_PATH)
-            ori_dist = np.load(self.cfg.TEST.ORI_DIST_PATH)
-        else:
-            cam_dist = None
-            ori_dist = None
+            if self.cfg.TEST.CAM_DIST_PATH != '':
+                cam_dist = np.load(self.cfg.TEST.CAM_DIST_PATH)
+            if self.cfg.TEST.ORI_DIST_PATH != '':
+                ori_dist = np.load(self.cfg.TEST.ORI_DIST_PATH)
 
         if self.do_rerank:
             distmat_np = re_ranking(qf, gf,

@@ -74,7 +74,6 @@ class WarmupCosineLR(torch.optim.lr_scheduler._LRScheduler):
         self.warmup_epochs = warmup_epochs
         super(WarmupCosineLR, self).__init__(optimizer, last_epoch)
 
-
     def get_lr(self):
         if self.last_epoch < self.warmup_epochs:
             lr = [base_lr * (self.last_epoch+1) / (self.warmup_epochs + 1e-32) for base_lr in self.base_lrs]
